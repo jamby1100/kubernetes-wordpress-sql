@@ -1,0 +1,28 @@
+# kubectl create -f mysql/mysql-rs.yml
+# rs is part of apps/v1beta2 not v1!
+apiVersion: apps/v1beta2
+kind: ReplicaSet
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.6
+        ports:
+        - containerPort: 3306
+          name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: securepassword

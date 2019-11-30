@@ -1,0 +1,10 @@
+# kubectl create -f mysql/mysql-svc.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql
