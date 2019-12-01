@@ -4,9 +4,19 @@
 
 ![wordpress-architectural-diagram](https://thepracticaldev.s3.amazonaws.com/i/pc8exixv13p9ngv765xp.png)
 
+- _StorageClass "efs", and PersistentVolumeClaim_ - I choose Amazon Elastic File Storage (AWS EFS) as a storage class so I can have spawn many pods that reads from and writes to the same storage. This way, I can also upload my own resources in EFS and have it accessible across all the pods, like what I did with this static website: http://a96b63955144811ea9e34064175c18bb-2094150385.ap-southeast-1.elb.amazonaws.com/static-kubernetes-wordpress-assets/static_page.html
+- _Secret resource_ -  to provide the Wordpress application the root password it will use to connect to the database. 
+- _ReplicaSet_ - to ensure that there are only 3 pods running the Wordpress application. I defined the secret, volume, ports and image here.
+- _Load Balancer Service_ - to allow external clients to connect to the Wordpress application.
+
 ##### Architectural Diagram for MySQL
 
 ![mysql-architectural-diagram](https://thepracticaldev.s3.amazonaws.com/i/sj6kvr7oafl0lvixvmg2.png)
+
+- _StorageClass "gp2", and PersistentVolumeClaim_ - to ensure that the MySQL Database will have data that is persistent. The PersistentVolume points to an AWS EBS volume.
+- _Secret resource_ -  to provide the MySQL application the root password it will use to create the root user
+- _ReplicaSet_ - to ensure that there is only 1 pod running the MySQL Database. I defined the secret, volume, ports and image here.
+- _ClusterIP Service_ - to allow only internal clients (i.e other pods in the cluster) to connect to the MySQL Database.
 
 ## II. Setup the EKS Cluster
 
@@ -146,8 +156,6 @@ kubectl create -f mysql/mysql-svc.yml
 kubectl create -f wordpress/wordpress-svc.yml
 
 kubectl get services
-
-kubectl 
 ```
 
 ## IV. Cleanup
