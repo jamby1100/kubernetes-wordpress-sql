@@ -1,3 +1,5 @@
+# Kubernetes: Wordpress + MySQL Implementation
+
 ## I. Infrastructure Setup
 
 ### 1.1 Architectural Diagram for Wordpress
@@ -20,9 +22,9 @@
 
 ## II. Setup the EKS Cluster
 
-**2.1.** Setup your own EC2 instance. Ideally, it should have the Amazon Linux 2 AMI (so aws-cli comes pre-installed.)
-**2.2.** SSH into the instance
-**2.3.** Follow the cheatsheet below to create your very own EKS cluster.
+- **2.1.** Setup your own EC2 instance. Ideally, it should have the Amazon Linux 2 AMI (so aws-cli comes pre-installed.)
+- **2.2.** SSH into the instance
+- **2.3.** Follow the cheatsheet below to create your very own EKS cluster.
 
 ```sh
 # ensure aws-cli is installed
