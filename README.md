@@ -1,11 +1,13 @@
 ## Create the Storage Class
 ```sh
 kubectl create -f utilities/aws_storage_class.yml
+kubectl create -f utilities/efs-sc.yml
 ```
 
 ## Create the PersistentVolumeClaims
 ```sh
 kubectl create -f mysql/mysql-pvc.yml
+kubectl create -f wordpress/efs-pvc.yml
 
 kubectl get pvc
 ```
