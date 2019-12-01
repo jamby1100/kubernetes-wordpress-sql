@@ -2,11 +2,11 @@
 
 ##### Architectural Diagram for Wordpress
 
-![wordpress-architectural-diagram](https://la-jamby-catpics.s3-ap-southeast-1.amazonaws.com/wordpress-architectural-diagram.png)
+![wordpress-architectural-diagram](https://thepracticaldev.s3.amazonaws.com/i/pc8exixv13p9ngv765xp.png)
 
 ##### Architectural Diagram for MySQL
 
-![mysql-architectural-diagram](https://la-jamby-catpics.s3-ap-southeast-1.amazonaws.com/mysql-architectural-diagram.png)
+![mysql-architectural-diagram](https://thepracticaldev.s3.amazonaws.com/i/sj6kvr7oafl0lvixvmg2.png)
 
 ## II. Setup the EKS Cluster
 
