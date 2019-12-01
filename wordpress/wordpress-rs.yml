@@ -30,6 +30,7 @@ spec:
         volumeMounts:
         - name: wordpress-temporary-storage
           mountPath: /var/www/html
+          readOnly: true
       volumes:
       - name: wordpress-temporary-storage
         gitRepo:

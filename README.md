@@ -29,6 +29,8 @@ kubectl create -f mysql/mysql-svc.yml
 kubectl create -f wordpress/wordpress-svc.yml
 
 kubectl get services
+
+kubectl exec kubia-tdv76 -- curl -s http://10.100.194.174
 ```
 
 ## Cleanup
@@ -38,6 +40,7 @@ kubectl delete pvc mysql-pvc
 kubectl delete pvc wordpress-pvc
 
 kubectl delete rs mysql
+kubectl delete rs wordpress-mysql
 kubectl delete rs wordpress
 
 kubectl delete svc wordpress-loadbalancer
