@@ -6,7 +6,8 @@ kubectl create -f utilities/aws_storage_class.yml
 ## Create the PersistentVolumeClaims
 ```sh
 kubectl create -f mysql/mysql-pvc.yml
-kubectl create -f wordpress/wordpress-pvc.yml
+
+kubectl get pvc
 ```
 
 ## Create the Replication Set
@@ -33,7 +34,12 @@ kubectl get services
 ## Cleanup
 
 ```sh
-# delete rs and svc
+kubectl delete pvc mysql-pvc
+kubectl delete pvc wordpress-pvc
+
 kubectl delete rs mysql
+kubectl delete rs wordpress
+
+kubectl delete svc wordpress-loadbalancer
 kubectl delete svc mysql
 ```
