@@ -1,15 +1,15 @@
 ## I. Infrastructure Setup
 
-##### Architectural Diagram for Wordpress
+### Architectural Diagram for Wordpress
 
 ![wordpress-architectural-diagram](https://thepracticaldev.s3.amazonaws.com/i/pc8exixv13p9ngv765xp.png)
 
-- _StorageClass "efs", and PersistentVolumeClaim_ - I choose Amazon Elastic File Storage (AWS EFS) as a storage class so I can have spawn many pods that reads from and writes to the same storage. This way, I can also upload my own resources in EFS and have it accessible across all the pods, like what I did with this static website: http://a96b63955144811ea9e34064175c18bb-2094150385.ap-southeast-1.elb.amazonaws.com/static-kubernetes-wordpress-assets/static_page.html
+- _StorageClass "efs", and PersistentVolumeClaim_ - I choose Amazon Elastic File Storage (AWS EFS) as a storage class so I can spawn many pods that reads from and writes to the same storage. This way, I can also upload my own resources in EFS and have it accessible across all the pods, like what I did with this static website: http://a96b63955144811ea9e34064175c18bb-2094150385.ap-southeast-1.elb.amazonaws.com/static-kubernetes-wordpress-assets/static_page.html
 - _Secret resource_ -  to provide the Wordpress application the root password it will use to connect to the database. 
 - _ReplicaSet_ - to ensure that there are only 3 pods running the Wordpress application. I defined the secret, volume, ports and image here.
 - _Load Balancer Service_ - to allow external clients to connect to the Wordpress application.
 
-##### Architectural Diagram for MySQL
+### Architectural Diagram for MySQL
 
 ![mysql-architectural-diagram](https://thepracticaldev.s3.amazonaws.com/i/sj6kvr7oafl0lvixvmg2.png)
 
@@ -75,22 +75,22 @@ eksctl create cluster \
   - Do `sudo git clone https://github.com/jamby1100/static-kubernetes-wordpress-assets.git` to add static assets
   - Follow Section III
   - Then, visit `<<ELB URL>>/static-kubernetes-wordpress-assets/static_page.html` to see the static website
-    - for me, that's `http://a6edc20da142f11ea93a802fda8e2bd4-242778073.ap-southeast-1.elb.amazonaws.com/static-kubernetes-wordpress-assets/static_page.html`
+    - for me, that's `http://a96b63955144811ea9e34064175c18bb-2094150385.ap-southeast-1.elb.amazonaws.com/static-kubernetes-wordpress-assets/static_page.html`
 
-## III. Setup the Application
+## IV. Setup the Application
 
-### 3.0 Setup this repo
+### 4.0 Setup this repo
 ```
 git clone https://github.com/jamby1100/kubernetes-wordpress-sql.git
 cd kubernetes-wordpress-sql
 
 ```
 
-### 3.1 Setup Secrets
+### 4.1 Setup Secrets
 
-**3.1.1** Take your password and have it base64 encoded here: https://www.base64encode.org/
+**4.1.1** Take your password and have it base64 encoded here: https://www.base64encode.org/
 
-**3.1.2** Create a yml file for the secret `my-sql-db-secret.yml`. This file is under .gitignore so you won't see my secret.
+**4.1.2** Create a yml file for the secret `my-sql-db-secret.yml`. This file is under .gitignore so you won't see my secret.
 ```yml
 apiVersion: v1
 kind: Secret
@@ -101,7 +101,7 @@ data:
   mysql_password: << REPLACE ME >>
 ```
 
-**3.1.3** Create your secret
+**4.1.3** Create your secret
 ```sh
 
 kubectl create -f mysql/my-sql-db-secret.yml
@@ -110,26 +110,27 @@ kubectl get secrets mysql-credentials
 kubectl describe secrets mysql-credentials
 ```
 
-### 3.1 Setup Storage
+### 4.2 Setup Storage
 
 I decided to have 2 kinds of storage setups for my Kubernetes clustrer:
-- MySQL: For my MySQL database, I decided to have a ReadWriteOnce EBS volume.
+- MySQL: ReadWriteOnce EBS volume.
+- Wordpress: ReadWriteMany EFS volume.
 
-##### Create the Storage Class
+**4.2.1** Create the Storage Class
 
 ```sh
 kubectl create -f utilities/aws_storage_class.yml
 kubectl create -f utilities/efs-sc.yml
 ```
 
-##### Create the Volume
+**4.2.2**  Create the EFS Volume
 ```sh
 kubectl create -f wordpress/efs-pv.yml
 
 kubectl get pv
 ```
 
-##### Create the PersistentVolumeClaims
+**4.2.3**  Create the PersistentVolumeClaims
 ```sh
 kubectl create -f mysql/mysql-pvc.yml
 kubectl create -f wordpress/efs-pvc.yml
@@ -137,20 +138,19 @@ kubectl create -f wordpress/efs-pvc.yml
 kubectl get pvc
 ```
 
-### 3.2 Create the Replication Set
+### 4.3 Create the Replication Set
 
 ```sh
-# create the replicaset
 kubectl create -f mysql/mysql-rs.yml
 kubectl create -f wordpress/wordpress-rs.yml
 
-# see if it really created!
 kubectl get pods
 kubectl get rs
 ```
 
-### 3.3 Create the Service
-
+### 4.4 Create the Service
+- MySQL - this allows the MySQL Database to be accessible by internal clients (i.e other pods in the same cluster)
+- Wordpress - this allows the WordPress application to be accessible by external clients (i.e YOU)
 ```sh
 kubectl create -f mysql/mysql-svc.yml
 kubectl create -f wordpress/wordpress-svc.yml
@@ -158,8 +158,8 @@ kubectl create -f wordpress/wordpress-svc.yml
 kubectl get services
 ```
 
-## IV. Cleanup
-
+## V. Cleanup
+Don't forget to delete everything after!
 ```sh
 kubectl delete rs mysql
 kubectl delete rs wordpress
@@ -174,7 +174,9 @@ kubectl delete pv efs-pv
 kubectl delete secrets mysql-credentials
 ```
 
-## Resources
+## VI. Resources
+
+I would like to acknowledge the people behind the books and the articles that helped me deliver this application:
 
 ```sh
 # PRIMARY REFERENCE: Kubernetes in Action by Marko Luksa (p.1-224)
