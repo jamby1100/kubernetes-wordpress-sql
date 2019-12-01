@@ -1,10 +1,99 @@
-## Create the Storage Class
+## I. Infrastructure Setup
+
+## II. Setup the EKS Cluster
+
+1. Setup your own EC2 instance. Ideally, it should have the Amazon Linux 2 AMI (so aws-cli comes pre-installed.)
+2. SSH into the instance
+3. Follow the cheatsheet below to create your very own EKS cluster.
+
+```sh
+# ensure aws-cli is installed
+aws --version
+
+# install aws-iam-authenticator
+curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator
+chmod +x ./aws-iam-authenticator
+mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$HOME/bin:$PATH
+echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
+aws-iam-authenticator help
+
+# put in aws AKID and Secret
+aws configure
+
+# install eksctl
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tm
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+
+# install kubectl
+curl -o kubectl https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+echo 'export PATH=$HOME/bin:$PATH' >> ~/.bashrc
+kubectl version --short --client
+
+# create a cluster
+# - and then wait for it
+eksctl create cluster \
+--name prod-wordpress \
+--version 1.14 \
+--region ap-southeast-1 \
+--nodegroup-name standard-workers \
+--node-type t3.medium \
+--nodes 2 \
+--nodes-min 1 \
+--nodes-max 4 \
+--managed
+```
+
+## III. Setup the EFS File System
+
+- Follow (this AWS doc page)[https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html] to create your EFS File system. Here are a few reminders that can help you from doing mistakes:
+  - make sure the EFS File System is in the same VPC as the EKS Cluster!!
+  - make sure you get the SG write.
+- We need to know if your EFS File System works. 
+  - Create an EC2 instance on the same VPC as your EKS cluster
+  - Follow (this AWS guide)[https://docs.aws.amazon.com/efs/latest/ug/wt1-test.html] to mount your EFS File system on that EC2 instance
+  - Do `sudo git clone https://github.com/jamby1100/static-kubernetes-wordpress-assets.git` to add static assets
+  - Follow Section III
+  - Then, visit `<<ELB URL>>/static-kubernetes-wordpress-assets/static_page.html` to see the static website
+    - for me, that's `http://a6edc20da142f11ea93a802fda8e2bd4-242778073.ap-southeast-1.elb.amazonaws.com/static-kubernetes-wordpress-assets/static_page.html`
+
+## III. Setup the Application
+
+### 3.0 Setup this repo
+```
+git clone https://github.com/jamby1100/kubernetes-wordpress-sql.git
+cd kubernetes-wordpress-sql
+
+```
+
+### 3.1 Setup Secrets
+
+```
+echo "thisIsNotThePasswordIused" > mysql_password
+  
+kubectl create secret generic mysql-credentials --from-file=mysql_password
+```
+
+### 3.1 Setup Storage
+
+I decided to have 2 kinds of storage setups for my Kubernetes clustrer:
+- MySQL: For my MySQL database, I decided to have a ReadWriteOnce EBS volume.
+
+##### Create the Storage Class
+
 ```sh
 kubectl create -f utilities/aws_storage_class.yml
 kubectl create -f utilities/efs-sc.yml
 ```
 
-## Create the PersistentVolumeClaims
+##### Create the Volume
+```sh
+kubectl create -f wordpress/efs-pv.yml
+```
+
+##### Create the PersistentVolumeClaims
 ```sh
 kubectl create -f mysql/mysql-pvc.yml
 kubectl create -f wordpress/efs-pvc.yml
@@ -12,7 +101,7 @@ kubectl create -f wordpress/efs-pvc.yml
 kubectl get pvc
 ```
 
-## Create the Replication Set
+### 3.2 Create the Replication Set
 
 ```sh
 # create the replicaset
@@ -24,7 +113,7 @@ kubectl get pods
 kubectl get rs
 ```
 
-## Create the Service
+### 3.3 Create the Service
 
 ```sh
 kubectl create -f mysql/mysql-svc.yml
@@ -35,16 +124,23 @@ kubectl get services
 kubectl exec kubia-tdv76 -- curl -s http://10.100.194.174
 ```
 
-## Cleanup
+## IV. Cleanup
 
 ```sh
-kubectl delete pvc mysql-pvc
-kubectl delete pvc wordpress-pvc
-
 kubectl delete rs mysql
-kubectl delete rs wordpress-mysql
 kubectl delete rs wordpress
 
 kubectl delete svc wordpress-loadbalancer
-kubectl delete svc mysql
+kubectl delete svc wordpress-mysql
+
+kubectl delete pvc mysql-pvc
+kubectl delete pvc efs-pvc
+```
+
+## Resources
+
+```sh
+
+# Mounting efs to an ec2 instance so I can add files
+https://docs.aws.amazon.com/efs/latest/ug/wt1-test.html
 ```

@@ -26,7 +26,10 @@ spec:
         - name: WORDPRESS_DB_HOST
           value: wordpress-mysql
         - name: WORDPRESS_DB_PASSWORD
-          value: securepassword
+          valueFrom:
+            secretKeyRef:
+              name: mysql-credentials
+              key: mysql_password
         volumeMounts:
         - name: persistent-storage
           mountPath: /var/www/html
