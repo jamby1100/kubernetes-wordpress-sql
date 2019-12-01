@@ -28,9 +28,11 @@ spec:
         - name: WORDPRESS_DB_PASSWORD
           value: securepassword
         volumeMounts:
-        - name: wordpress-storage
+        - name: wordpress-temporary-storage
           mountPath: /var/www/html
       volumes:
-      - name: wordpress-storage
-        persistentVolumeClaim:
-          claimName: wordpress-pvc
+      - name: wordpress-temporary-storage
+        gitRepo:
+          repository: https://github.com/jamby1100/static-kubernetes-wordpress-assets
+          revision: master
+          directory: .
