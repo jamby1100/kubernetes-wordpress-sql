@@ -27,3 +27,10 @@ spec:
           value: wordpress-mysql
         - name: WORDPRESS_DB_PASSWORD
           value: securepassword
+        volumeMounts:
+        - name: wordpress-storage
+          mountPath: /var/www/html
+      volumes:
+      - name: wordpress-storage
+        persistentVolumeClaim:
+          claimName: wordpress-pvc

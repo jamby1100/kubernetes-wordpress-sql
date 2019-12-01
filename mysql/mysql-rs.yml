@@ -1,5 +1,5 @@
 # kubectl create -f mysql/mysql-rs.yml
-# rs is part of apps/v1beta2 not v1!
+
 apiVersion: apps/v1beta2
 kind: ReplicaSet
 metadata:
@@ -26,3 +26,10 @@ spec:
         env:
         - name: MYSQL_ROOT_PASSWORD
           value: securepassword
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: mysql-pvc
