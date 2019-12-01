@@ -68,14 +68,14 @@ eksctl create cluster \
 
 ## III. Setup the EFS File System
 
-- **3.1** Follow (this AWS doc page)[https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html] to create your EFS File system. Here are a few reminders that can help you from doing mistakes:
+- **3.1** Follow this AWS doc page [https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html] to create your EFS File system. Here are a few reminders that can help you from doing mistakes:
   - make sure the EFS File System is in the same VPC as the EKS Cluster!!
   - make sure you get the SG write.
 - **3.2** We need to know if your EFS File System works. 
   - Create an EC2 instance on the same VPC as your EKS cluster
-  - Follow (this AWS guide)[https://docs.aws.amazon.com/efs/latest/ug/wt1-test.html] to mount your EFS File system on that EC2 instance
+  - Follow this AWS guide [https://docs.aws.amazon.com/efs/latest/ug/wt1-test.html] to mount your EFS File system on that EC2 instance
   - Do `sudo git clone https://github.com/jamby1100/static-kubernetes-wordpress-assets.git` to add static assets
-  - Follow Section III
+  - Follow Section IV
   - Then, visit `<<ELB URL>>/static-kubernetes-wordpress-assets/static_page.html` to see the static website
     - for me, that's `http://a96b63955144811ea9e34064175c18bb-2094150385.ap-southeast-1.elb.amazonaws.com/static-kubernetes-wordpress-assets/static_page.html`
 
