@@ -1,6 +1,6 @@
 ## I. Infrastructure Setup
 
-### Architectural Diagram for Wordpress
+### 1.1 Architectural Diagram for Wordpress
 
 ![wordpress-architectural-diagram](https://thepracticaldev.s3.amazonaws.com/i/pc8exixv13p9ngv765xp.png)
 
@@ -9,7 +9,7 @@
 - _ReplicaSet_ - to ensure that there are only 3 pods running the Wordpress application. I defined the secret, volume, ports and image here.
 - _Load Balancer Service_ - to allow external clients to connect to the Wordpress application.
 
-### Architectural Diagram for MySQL
+### 1.2 Architectural Diagram for MySQL
 
 ![mysql-architectural-diagram](https://thepracticaldev.s3.amazonaws.com/i/sj6kvr7oafl0lvixvmg2.png)
 
@@ -20,9 +20,9 @@
 
 ## II. Setup the EKS Cluster
 
-1. Setup your own EC2 instance. Ideally, it should have the Amazon Linux 2 AMI (so aws-cli comes pre-installed.)
-2. SSH into the instance
-3. Follow the cheatsheet below to create your very own EKS cluster.
+**2.1.** Setup your own EC2 instance. Ideally, it should have the Amazon Linux 2 AMI (so aws-cli comes pre-installed.)
+**2.2.** SSH into the instance
+**2.3.** Follow the cheatsheet below to create your very own EKS cluster.
 
 ```sh
 # ensure aws-cli is installed
@@ -66,10 +66,10 @@ eksctl create cluster \
 
 ## III. Setup the EFS File System
 
-- Follow (this AWS doc page)[https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html] to create your EFS File system. Here are a few reminders that can help you from doing mistakes:
+- **3.1** Follow (this AWS doc page)[https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html] to create your EFS File system. Here are a few reminders that can help you from doing mistakes:
   - make sure the EFS File System is in the same VPC as the EKS Cluster!!
   - make sure you get the SG write.
-- We need to know if your EFS File System works. 
+- **3.2** We need to know if your EFS File System works. 
   - Create an EC2 instance on the same VPC as your EKS cluster
   - Follow (this AWS guide)[https://docs.aws.amazon.com/efs/latest/ug/wt1-test.html] to mount your EFS File system on that EC2 instance
   - Do `sudo git clone https://github.com/jamby1100/static-kubernetes-wordpress-assets.git` to add static assets
@@ -181,6 +181,11 @@ I would like to acknowledge the people behind the books and the articles that he
 ```sh
 # PRIMARY REFERENCE: Kubernetes in Action by Marko Luksa (p.1-224)
 https://www.manning.com/books/kubernetes-in-action
+
+# Installing EKS
+https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html
+https://docs.aws.amazon.com/eks/latest/userguide/getting-started-console.html
+https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html
 
 # Creating EFS File Systems for EKS 
 https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
