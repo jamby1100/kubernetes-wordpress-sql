@@ -14,4 +14,6 @@ kubectl exec kubia-tdv76 -- curl -s http://10.15.243.227
 # (4) do `docker exec -it <cid> /bin/bash`
 # [B]
 kubectl exec -it mongodb mongo
+kubectl exec -it mysql-nqn72 -- mysql -u root -p securepassword
+kubectl exec -it mysql-nqn72 -- bash
 ```

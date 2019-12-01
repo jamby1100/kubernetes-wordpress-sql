@@ -1,5 +1,13 @@
 ## I. Infrastructure Setup
 
+##### Architectural Diagram for Wordpress
+
+[](https://la-jamby-catpics.s3-ap-southeast-1.amazonaws.com/wordpress-architectural-diagram.png)
+
+##### Architectural Diagram for MySQL
+
+[](https://la-jamby-catpics.s3-ap-southeast-1.amazonaws.com/mysql-architectural-diagram.png)
+
 ## II. Setup the EKS Cluster
 
 1. Setup your own EC2 instance. Ideally, it should have the Amazon Linux 2 AMI (so aws-cli comes pre-installed.)
@@ -70,10 +78,26 @@ cd kubernetes-wordpress-sql
 
 ### 3.1 Setup Secrets
 
+**3.1.1** Take your password and have it base64 encoded here: https://www.base64encode.org/
+
+**3.1.2** Create a yml file for the secret `my-sql-db-secret.yml`. This file is under .gitignore so you won't see my secret.
+```yml
+apiVersion: v1
+kind: Secret
+metadata:
+   name: mysql-credentials
+type: Opaque
+data:
+  mysql_password: << REPLACE ME >>
 ```
-echo "thisIsNotThePasswordIused" > mysql_password
-  
-kubectl create secret generic mysql-credentials --from-file=mysql_password
+
+**3.1.3** Create your secret
+```sh
+
+kubectl create -f mysql/my-sql-db-secret.yml
+
+kubectl get secrets mysql-credentials
+kubectl describe secrets mysql-credentials
 ```
 
 ### 3.1 Setup Storage
@@ -91,6 +115,8 @@ kubectl create -f utilities/efs-sc.yml
 ##### Create the Volume
 ```sh
 kubectl create -f wordpress/efs-pv.yml
+
+kubectl get pv
 ```
 
 ##### Create the PersistentVolumeClaims
@@ -121,7 +147,7 @@ kubectl create -f wordpress/wordpress-svc.yml
 
 kubectl get services
 
-kubectl exec kubia-tdv76 -- curl -s http://10.100.194.174
+kubectl 
 ```
 
 ## IV. Cleanup
@@ -135,12 +161,32 @@ kubectl delete svc wordpress-mysql
 
 kubectl delete pvc mysql-pvc
 kubectl delete pvc efs-pvc
+
+kubectl delete pv efs-pv
+kubectl delete secrets mysql-credentials
 ```
 
 ## Resources
 
 ```sh
+# PRIMARY REFERENCE: Kubernetes in Action by Marko Luksa (p.1-224)
+https://www.manning.com/books/kubernetes-in-action
+
+# Creating EFS File Systems for EKS 
+https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
 
 # Mounting efs to an ec2 instance so I can add files
 https://docs.aws.amazon.com/efs/latest/ug/wt1-test.html
+
+# Doing static websites
+https://www.w3schools.com/html/html_images.asp
+
+# EKS Storage Class
+https://docs.aws.amazon.com/eks/latest/userguide/storage-classes.html
+
+# Volumes in Kubernetes
+https://kubernetes.io/docs/concepts/storage/persistent-volumes/#claims-as-volumes
+
+# Basic Wordpress on Kubernetes
+https://kubernetes.io/docs/tutorials/stateful-application/mysql-wordpress-persistent-volume/
 ```
