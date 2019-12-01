@@ -1,4 +1,4 @@
-# Kubernetes: Wordpress + MySQL Implementation
+# Kubernetes on AWS Elastic Kubernetes Service (EKS): Wordpress + MySQL Implementation 
 
 ## I. Infrastructure Setup
 
