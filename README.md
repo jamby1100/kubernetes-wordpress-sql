@@ -41,7 +41,7 @@ aws-iam-authenticator help
 aws configure
 
 # install eksctl
-curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tm
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 sudo mv /tmp/eksctl /usr/local/bin
 eksctl version
 
@@ -92,7 +92,7 @@ cd kubernetes-wordpress-sql
 
 **4.1.1** Take your password and have it base64 encoded here: https://www.base64encode.org/
 
-**4.1.2** Create a yml file for the secret `my-sql-db-secret.yml`. This file is under .gitignore so you won't see my secret.
+**4.1.2** Create a yml file for the secret `mysql/my-sql-db-secret.yml`. This file is under .gitignore so you won't see my secret.
 ```yml
 apiVersion: v1
 kind: Secret
@@ -121,11 +121,16 @@ I decided to have 2 kinds of storage setups for my Kubernetes clustrer:
 **4.2.1** Create the Storage Class
 
 ```sh
+# clear up the default gp2 sc
+kubectl delete sc gp2
 kubectl create -f utilities/aws_storage_class.yml
 kubectl create -f utilities/efs-sc.yml
+
+kubectl get sc
 ```
 
 **4.2.2**  Create the EFS Volume
+MAKE SURE TO EDIT THE FILE efs-pv.yml to change it to your file system id (mine is fs-90d99ed1) for EFS
 ```sh
 kubectl create -f wordpress/efs-pv.yml
 
